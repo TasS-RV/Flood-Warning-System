@@ -17,3 +17,14 @@ def stations_by_distance(stations, p):
 
 def stations_within_radius(stations, centre, r):
     return [station for station in stations if haversine(station.coord, centre) <= r]
+
+def rivers_with_station(stations):
+    return {station.river for station in stations}
+
+def stations_by_river(stations):
+    rivers = rivers_with_station(stations)
+    station_dict = {}
+    for river in rivers:
+        station_dict[river] = [station for station in stations if station.river == river]
+
+    return station_dict
