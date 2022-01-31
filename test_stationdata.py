@@ -3,12 +3,6 @@
 # SPDX-License-Identifier: MIT
 """Unit test for the stationdata module"""
 
-import sys
-import os
-
-# Ensures that the floodsystem path is added to PYTHONPATH as a module for importing
-sys.path.append(os.path.dirname(os.path.abspath(__file__)).rsplit('\\', 1)[0])
-
 from floodsystem.stationdata import build_station_list, update_water_levels
 
 
