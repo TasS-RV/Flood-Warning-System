@@ -6,9 +6,21 @@ from floodsystem import station
 from floodsystem.geo import stations_by_distance, stations_within_radius, rivers_with_station, stations_by_river, rivers_by_station_number
 from floodsystem.station import MonitoringStation
 
+
+
+def station_create_test(s, s_id, m_id, label, coord, trange, river, town):
+    assert s.station_id == s_id
+    assert s.measure_id == m_id
+    assert s.name == label
+    assert s.coord == coord
+    assert s.typical_range == trange
+    assert s.river == river
+    assert s.town == town
+
+
 def create_test_stations(n):
 
-    # Create 3 stations
+    # Create n number of stations
     stations = []
     for i in range(n):
         s_id = "s-id-" + str(i)
@@ -18,7 +30,13 @@ def create_test_stations(n):
         trange = (-2.3, 3.4445)
         river = "River X"
         town = "My Town"
-        stations.append(MonitoringStation(s_id, m_id, label, coord, trange, river, town))
+        s = MonitoringStation(s_id, m_id, label, coord, trange, river, town)
+
+        #Checking station created correctly:
+        station_create_test(s, s_id, m_id, label, coord, trange, river, town)
+
+  
+        stations.append(s) #Adding randomly generated Station into list of stations
 
     return stations
 
@@ -81,22 +99,25 @@ def test_stations_by_river():
 
 
 
-def rivers_by_station_number_test():
+def test_rivers_by_station_number():
     stations = create_test_stations(6)
     stations[0].river = "Han"
     stations[1].river = "Yeongsan"
     stations[2].river = "Yeongsan"
-    stations[3].river = "Geum"
+    stations[3].river = "Yeongsan"
     stations[4].river = "Imjin"
-    stations[4].river = "Imjin"
+    stations[5].river = "Imjin"
 
     river_station = rivers_by_station_number(stations, 6)
 
     print(river_station)
 
-    assert river_station[0][0] == "Yeonggsan"
-    assert river_station[0][1] == 2
-    assert river_station[1] == ("Imjin", 6)
+
+    assert river_station[0][0] == "Yeongsan"
+    assert river_station[0][1] == 3
+    assert river_station[1] == ("Imjin", 2)
+   # assert river_station[1] == ("Imjin", 4) #These 2 will throw assertion errors
+   # assert river_station[0][0] == "Han"
     
 
 

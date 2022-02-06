@@ -1,7 +1,8 @@
-"""Unit test for the station module"""
+"""Independent Unit test for the station module"""
 
 from floodsystem.station import MonitoringStation
 from floodsystem.station import inconsistent_typical_range_stations
+
 
 
 def station_create_test(s, s_id, m_id, label, coord, trange, river, town):
@@ -41,6 +42,12 @@ def create_test_stations(n):
 def test_inconsistent_typical_range_stations():
 
     stations = create_test_stations(5)
+    stations[0].river = "Han"
+    stations[1].river = "Yeongsan"
+    stations[2].river = "Geum"
+    stations[3].river = "Bukhan"
+    stations[4].river = "Imjin"
+
     
     #Above redundant - main part required for test
     stations[0].typical_range = None
@@ -54,7 +61,7 @@ def test_inconsistent_typical_range_stations():
     assert stations[4].typical_range_consistent == True   #Tests True/ False if stations are Consistent/ Inconsistent respectively
     
   # assert stations[4].typical_range_consistent == False
-   #assert inconsistent_stations == ['station0','station1','station4']
+  # assert inconsistent_stations == ['station0','station1','station4']
  
 #Checking:
-#print(test_inconsistent_typical_range_stations())
+print(test_inconsistent_typical_range_stations())

@@ -7,6 +7,16 @@ from floodsystem.station import MonitoringStation
 
 #This file is to independently run this single test for verifying Task 1E
 
+def station_create_test(s, s_id, m_id, label, coord, trange, river, town):
+    assert s.station_id == s_id
+    assert s.measure_id == m_id
+    assert s.name == label
+    assert s.coord == coord
+    assert s.typical_range == trange
+    assert s.river == river
+    assert s.town == town
+
+
 def create_test_stations(n):
 
     # Create n number of stations
@@ -19,7 +29,13 @@ def create_test_stations(n):
         trange = (-2.3, 3.4445)
         river = "River X"
         town = "My Town"
-        stations.append(MonitoringStation(s_id, m_id, label, coord, trange, river, town))
+        s = MonitoringStation(s_id, m_id, label, coord, trange, river, town)
+
+        #Checking station created correctly:
+        station_create_test(s, s_id, m_id, label, coord, trange, river, town)
+
+  
+        stations.append(s) #Adding randomly generated Station into list of stations
 
     return stations
 
@@ -82,7 +98,8 @@ def test_stations_by_river():
 
 
 
-def rivers_by_station_number_test():
+def test_rivers_by_station_number():
+    
     stations = create_test_stations(6)
     stations[0].river = "Han"
     stations[1].river = "Yeongsan"
@@ -93,7 +110,7 @@ def rivers_by_station_number_test():
 
     river_station = rivers_by_station_number(stations, 6)
 
-    print(river_station)
+  #  print(river_station)
 
 
     assert river_station[0][0] == "Yeongsan"
