@@ -1,6 +1,6 @@
 from floodsystem.geo import stations_by_river
 from floodsystem.stationdata import build_station_list 
-from floodsystem.station import MonitoringStation
+
 
 
 stations = build_station_list()
@@ -13,23 +13,16 @@ def inconsistent_typical_range_stations(stations):
 
     for station in stations:
         count+=1
-        print(station.typical_range)
-        print('\n')
         print(station)
         print('\n')
-        
-         
-        if station.typical_range == None:
-            print("False")
+        print(station.typical_range)
+        print('\n')
+        print(station.typical_range_consistent)
 
-        elif station.typical_range[0] < station.typical_range[1]:
-            print("True")
-        
-        elif station.typical_range[0] > station.typical_range[1]:
-            print("False")
-
-        if count>= 100:
+        if count>= 10:
             break
+
+        
 
 
 print(inconsistent_typical_range_stations(stations))

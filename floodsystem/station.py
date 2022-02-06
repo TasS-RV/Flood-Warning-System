@@ -38,7 +38,8 @@ class MonitoringStation:
         d += "   river:         {}\n".format(self.river)
         d += "   typical range: {}".format(self.typical_range)
         return d
-
+    
+    @property
     def typical_range_consistent(self):
         if self.typical_range == None:
             return False
