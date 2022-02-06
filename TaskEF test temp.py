@@ -1,14 +1,15 @@
-"""Unit test for geo module"""
-
 from random import random
 from floodsystem import station
 
 from floodsystem.geo import stations_by_distance, stations_within_radius, rivers_with_station, stations_by_river, rivers_by_station_number
 from floodsystem.station import MonitoringStation
 
+
+#This file is to independently run this single test for verifying Task 1E
+
 def create_test_stations(n):
 
-    # Create 3 stations
+    # Create n number of stations
     stations = []
     for i in range(n):
         s_id = "s-id-" + str(i)
@@ -86,20 +87,26 @@ def rivers_by_station_number_test():
     stations[0].river = "Han"
     stations[1].river = "Yeongsan"
     stations[2].river = "Yeongsan"
-    stations[3].river = "Geum"
+    stations[3].river = "Yeongsan"
     stations[4].river = "Imjin"
-    stations[4].river = "Imjin"
+    stations[5].river = "Imjin"
 
     river_station = rivers_by_station_number(stations, 6)
 
     print(river_station)
 
-    assert river_station[0][0] == "Yeonggsan"
-    assert river_station[0][1] == 2
-    assert river_station[1] == ("Imjin", 6)
-    
+
+    assert river_station[0][0] == "Yeongsan"
+    assert river_station[0][1] == 3
+    assert river_station[1] == ("Imjin", 2)
+   # assert river_station[1] == ("Imjin", 4) #These 2 will throw assertion errors
+   # assert river_station[0][0] == "Han"
 
 
-    
+#Multiple test functions do run:
+test_stations_by_river()
+test_stations_by_distance()
+rivers_by_station_number_test()
+
 
 
