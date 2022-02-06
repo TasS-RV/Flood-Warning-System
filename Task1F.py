@@ -1,34 +1,15 @@
-from floodsystem.geo import stations_by_river
+from floodsystem.station import inconsistent_typical_range_stations
 from floodsystem.stationdata import build_station_list 
 
-
-
+#Building list of station objects
 stations = build_station_list()
 
-def inconsistent_typical_range_stations(stations):
-    count =  0
-
-    
+def runF(stations):
+    return inconsistent_typical_range_stations(stations)
 
 
-    for station in stations:
-        count+=1
-        print(station)
-        print('\n')
-        print(station.typical_range)
-        print('\n')
-        print(station.typical_range_consistent)
 
-        if count>= 10:
-            break
+if __name__ == "__main__":
+    runF(stations)
+    #print(runF(stations))
 
-        
-
-
-print(inconsistent_typical_range_stations(stations))
-
-
-#In station, MonitoringStation class, method that compares the values of high and low ranges
-#returns true if consistent, false if inconsistent
-
-#Use that method, check the False stations accumulate into a list in the inconsistent_typical_range_stations functions

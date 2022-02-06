@@ -9,6 +9,14 @@ stations = build_station_list()
 
 N = 9#Top N number of rivers with highest number of stations
 
-print(rivers_by_station_number(stations, N))
+def runE(stations, N):
+    return rivers_by_station_number(stations, N)
+
+
+
+if __name__ == "__main__":
+    runE(stations, N)
+    print(runE(stations, N))
+
 
 

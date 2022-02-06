@@ -51,6 +51,9 @@ class MonitoringStation:
         elif self.typical_range[0] > self.typical_range[1]:
             return False
         
-    
 
+#For Task1f:
+
+def inconsistent_typical_range_stations(stations):
+    return [station.name for station in stations if station.typical_range_consistent == False]
 
