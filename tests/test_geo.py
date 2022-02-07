@@ -34,17 +34,21 @@ def create_test_stations(n):
 
         #Checking station created correctly:
         station_create_test(s, s_id, m_id, label, coord, trange, river, town)
-
+         
   
         stations.append(s) #Adding randomly generated Station into list of stations
 
     return stations
 
 
+
+
+
 def test_stations_by_distance():
 
     stations = create_test_stations(3)
 
+    print(stations)
     p = (2.0, 2.0)
     distances = stations_by_distance(stations, p)
 
