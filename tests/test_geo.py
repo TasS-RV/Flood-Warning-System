@@ -111,7 +111,7 @@ def test_rivers_by_station_number():
     stations[7].river = "Han"
 
 
-    river_station = rivers_by_station_number(stations, 3)
+    river_station = rivers_by_station_number(stations, 3) #Top 3 rivers with stations
 
     assert river_station[0] == ("Yeongsan", 3)
     assert river_station[1] == ("Imjin", 2) or river_station[2] == ("Han", 2)
@@ -120,7 +120,9 @@ def test_rivers_by_station_number():
     # assert river_station[1] == ("Imjin", 4) #These 2 will throw assertion errors
     # assert river_station[0][0] == "Han"
 
-    river_station = rivers_by_station_number(stations, 2)
+
+
+    river_station = rivers_by_station_number(stations, 2) #Top 2 Rivers with stations
 
     assert river_station[0] == ("Yeongsan", 3)
     assert river_station[1] == ("Imjin", 2) or river_station[2] == ("Han", 2)

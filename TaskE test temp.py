@@ -99,31 +99,38 @@ def test_stations_by_river():
 
 
 def test_rivers_by_station_number():
-    
-    stations = create_test_stations(6)
-    stations[0].river = "Han"
+    stations = create_test_stations(8)
+    stations[0].river = "Nile"
     stations[1].river = "Yeongsan"
     stations[2].river = "Yeongsan"
     stations[3].river = "Yeongsan"
     stations[4].river = "Imjin"
     stations[5].river = "Imjin"
-
-    river_station = rivers_by_station_number(stations, 6)
-
-  #  print(river_station)
+    stations[6].river = "Han"
+    stations[7].river = "Han"
 
 
-    assert river_station[0][0] == "Yeongsan"
-    assert river_station[0][1] == 3
-    assert river_station[1] == ("Imjin", 2)
-   # assert river_station[1] == ("Imjin", 4) #These 2 will throw assertion errors
-   # assert river_station[0][0] == "Han"
+    river_station = rivers_by_station_number(stations, 3)
+
+    assert river_station[0] == ("Yeongsan", 3)
+    assert river_station[1] == ("Imjin", 2) or river_station[2] == ("Han", 2)
+    assert river_station[2] == ("Imjin", 2) or river_station[2] == ("Han", 2)
+    assert len(river_station) == 3
+    # assert river_station[1] == ("Imjin", 4) #These 2 will throw assertion errors
+    # assert river_station[0][0] == "Han"
+
+    river_station = rivers_by_station_number(stations, 2)
+
+    assert river_station[0] == ("Yeongsan", 3)
+    assert river_station[1] == ("Imjin", 2) or river_station[2] == ("Han", 2)
+    assert river_station[2] == ("Imjin", 2) or river_station[2] == ("Han", 2)
+    assert len(river_station) == 3
 
 
 #Multiple test functions do run:
 test_stations_by_river()
 test_stations_by_distance()
-rivers_by_station_number_test()
+test_rivers_by_station_number()
 
 
 
