@@ -39,13 +39,12 @@ class MonitoringStation:
         d += "   typical range: {}".format(self.typical_range)
         return d
     
-    @property
     def typical_range_consistent(self):
         if self.typical_range == None:
             return False
         
         #Low Range is lower than High range - Consistent result
-        elif self.typical_range[0] < self.typical_range[1]:
+        elif self.typical_range[0] <= self.typical_range[1]:
             return True
         
         elif self.typical_range[0] > self.typical_range[1]:
@@ -55,5 +54,5 @@ class MonitoringStation:
 #For Task1f:
 
 def inconsistent_typical_range_stations(stations):
-    return [station.name for station in stations if station.typical_range_consistent == False]
+    return [station.name for station in stations if station.typical_range_consistent() == False]
 

@@ -50,8 +50,8 @@ def test_inconsistent_typical_range_stations():
     inconsistent_stations = inconsistent_typical_range_stations(stations)
 
     assert inconsistent_stations == ['station0','station1','station2']
-    assert stations[0].typical_range_consistent == False
-    assert stations[4].typical_range_consistent == True   #Tests True/ False if stations are Consistent/ Inconsistent respectively
+    assert stations[0].typical_range_consistent() == False
+    assert stations[4].typical_range_consistent() == True   #Tests True/ False if stations are Consistent/ Inconsistent respectively
     
   # assert stations[4].typical_range_consistent == False
    #assert inconsistent_stations == ['station0','station1','station4']
