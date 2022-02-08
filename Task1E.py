@@ -16,7 +16,7 @@ def runE(stations, N):
 
 if __name__ == "__main__":
     runE(stations, N)
- #   print(runE(stations, N))
+    print(runE(stations, N))
 
 
 
