@@ -23,7 +23,7 @@ def create_test_stations(n):
         m_id = "m-id-" + str(i)
         label = "station" + str(i)
         coord = (i*1.5, i*1.5)
-        trange = (-2.3, 3.4445)
+        trange = (5, 25)
         river = "River X"
         town = "My Town"
         s = MonitoringStation(s_id, m_id, label, coord, trange, river, town)
@@ -58,3 +58,10 @@ def test_inconsistent_typical_range_stations():
  
 #Checking:
 #print(test_inconsistent_typical_range_stations())
+
+def test_relative_water_level():
+    station = create_test_stations(1)[0]
+
+    station.latest_level = 10
+
+    assert station.relative_water_level() == 0.25
