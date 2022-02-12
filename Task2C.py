@@ -14,7 +14,8 @@ def run():
     update_water_levels(stations)
 
     # Get the 10 stations with the highest relative levels
-    stations = stations_highest_rel_level(stations, 10)
+    N = 10
+    stations = stations_highest_rel_level(stations, N)
 
     for station in stations:
         print(station.name, station.relative_water_level())
