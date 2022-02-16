@@ -1,12 +1,9 @@
 """Unit test for geo module"""
 
 from random import random
-from floodsystem import station
 
 from floodsystem.geo import stations_by_distance, stations_within_radius, rivers_with_station, stations_by_river, rivers_by_station_number
 from floodsystem.station import MonitoringStation
-
-
 
 def station_create_test(s, s_id, m_id, label, coord, trange, river, town):
     assert s.station_id == s_id
