@@ -14,3 +14,5 @@ def stations_levels_over_threshold(stations, tol):
 def stations_highest_rel_level(stations, N):
     stations = [station for station in stations if station.relative_water_level() != None]
     return sorted(stations, key=lambda x: x.relative_water_level(), reverse=True)[:N]
+  #  return sorted(stations, key=lambda x: x.relative_water_level(), reverse=False)[:N]
+  # ^ Used as a reference test to see if the top 5 station water levels were feasible: as significantly higher than the typical range High
