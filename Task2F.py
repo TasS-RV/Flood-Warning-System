@@ -35,7 +35,8 @@ def plot_water_level_with_fit(station, dates, levels, p, range_plot = True): #By
         
     #Dates converted into float objects - required for polynomial fitting function
         x_dates = mplt.dates.date2num(dates)   
-        x_dates_shift = [(date - x_dates[-1]) for date in x_dates] #Shifted by proportion of dates relative to earlier (-10 days from now) 
+        x_dates_shift = [(date - x_dates[-1]) for date in x_dates] #Shifted by proportion of dates relative to earlier 
+        #x_dates_shift: required for increased accuracy of polynomial fit
 
         print(station.name)
     #print(x_dates_shift)
@@ -44,42 +45,36 @@ def plot_water_level_with_fit(station, dates, levels, p, range_plot = True): #By
     # Convert coefficient into a polynomial that can be evaluated
         poly = np.poly1d(coeff)
 
-    
-        plt.plot(x_dates_shift, levels, color = 'r', label = "Real Data")
-        plt.plot(x_dates_shift, poly(x_dates_shift), color = 'b', label = "Best-fit Curve")
+        plt.plot(dates, levels, color = 'r', label = "Real Data")
+        plt.plot(dates, poly(x_dates_shift), color = 'b', label = "Best-fit Curve")
 
 
         if range_plot == True:
-            range_dates = np.linspace(x_dates_shift[0], x_dates_shift[-1], len(x_dates_shift))
-            #print(range_dates)
+           # range_dates = np.linspace(x_dates_shift[0], x_dates_shift[-1], len(x_dates_shift))
+          #  range_dates = np.linspace(dates[0], dates[-1], len(x_dates_shift))
 
             range_low = list(itertools.repeat(station.typical_range[0],len(x_dates_shift)))
             range_high = list(itertools.repeat(station.typical_range[1],len(x_dates_shift)))
             
-            plt.plot(range_dates, range_low, color = 'g', label = "High line") 
-            plt.plot(range_dates, range_high, color = 'g', label = "Low line")     
+            plt.plot(dates, range_low, color = 'g', label = "High line") 
+            plt.plot(dates, range_high, color = '#00FA10', label = "Low line")     
+            plt.xticks(rotation = 45)
             plt.legend()
        
     #Customising presentation of Graph:
         plt.legend()
-        plt.xlabel("Days behind from {0}".format(datetime.datetime.utcnow()))
+        plt.xlabel("Dates: (MM DD Hr)")
         plt.ylabel("Water level")
     
-        plt.xticks(rotation = 0) #Can accomodate days number easily on x-axis
+        plt.xticks(rotation = 45) #Can accomodate days number easily on x-axis
         plt.title(station.name)
 
-    # Display plot
+    #Display plot
         plt.tight_layout()  # This makes sure plot does not cut off date labels
         plt.show()
 
     
 
-'''Next steps: plot the high and low range as reference lines and label, instead iof points, use itertools.repeat for this to maintian the same value
-Consider ideas for how 2G could be done?
-
-To prevent negative date object: convert the polyfit X-dates value using timedelta back into datatime objects, the  plotting to prevent negative days issue
-
-'''
 
 
 

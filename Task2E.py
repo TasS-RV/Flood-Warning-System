@@ -19,7 +19,7 @@ def run():
     stations = stations_highest_rel_level(stations, N)
 
     # Fetch data over past 10 days
-    dt = 10
+    dt = 2
 
     for station in stations:
         dates, levels = fetch_measure_levels(
