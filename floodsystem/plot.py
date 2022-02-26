@@ -23,21 +23,16 @@ def plot_water_levels(station, dates, levels, show_plot=True):
     # Display plot
     plt.tight_layout()  # This makes sure plot does not cut off date labels
     
-<<<<<<< HEAD
-    if plot == True:
-=======
     if show_plot == True:
->>>>>>> fda3f57c9d6f0439e32a03905a250ca3cb6f55e5
         plt.show()
 
     return plot
 
 
 
+
 def plot_water_level_with_fit(station, dates, levels, p, range_plot = True): #By default choose to plot the typical range High and Low
 
-    typical_range = station.typical_range
-    
     #Initially due to empty plot stations with anomalous data
     if len(levels) == 0 or len(dates) == 0: 
         print("Error: Empty Data Set")
@@ -82,6 +77,8 @@ def plot_water_level_with_fit(station, dates, levels, p, range_plot = True): #By
     #Display plot
         plt.tight_layout()  # This makes sure plot does not cut off date labels
         plt.show()
+
+        return real_plot, poly_plot 
     
 
 
