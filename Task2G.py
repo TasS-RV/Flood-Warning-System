@@ -2,33 +2,30 @@ from difflib import context_diff
 from floodsystem.datafetcher import fetch_measure_levels
 from floodsystem.flood import stations_highest_rel_level
 from floodsystem.stationdata import build_station_list, update_water_levels
-from floodsystem.plot import plot_water_level_with_fit
+from floodsystem.station import inconsistent_typical_range_stations
 
 import datetime
 from matplotlib import pyplot as plt
 import matplotlib as mplt
 import numpy as np
+from itertools import groupby
 
-
-#Consider algorthm 
-#Using relative data for a scaled number
-#Multiplier of 0.6
-#Multiplier of 0.4: using extrapolatio, using derivative from polynomial function
-#Predict tomorrows: 0.4x tomorrow + 0.6x todays
-#/2 for the relative value, and thresholds applied
-
-#How to test? Known value of station that would be low, high, moderate etc... (4 tests)
-#Then check if it returns the correct reading
-#Use the same range of dates but different functions
-
+#Arbitrarily decided thresholds: 1 - Low, 2 - Moderate, 3 - High, 4 - Severe (Risk levels for flooding)
 
 def risk_threshold(relative_scale):
-    pass
+    low = 0.0
+    moderate = 0.94
+    high = 1.9
 
-
-
-
-
+    if relative_scale <= low:
+        return 1
+    elif low < relative_scale <= moderate:
+        return 2
+    elif moderate < relative_scale <= high:
+        return 3
+    elif relative_scale > high:
+        return 4
+     
 #Loops runs once per station: station object, array of levels and timestamps (dates)
 
 def risk_assessment(station, dates, levels, p, plot = False):
@@ -95,30 +92,29 @@ def risk_assessment(station, dates, levels, p, plot = False):
         plt.legend()
         plt.show()
 
-       
-
     #Scaling factors based on relative importance of present (ps) and quarter day (fs1) and half day (fs2)
     ps = 0.55
     fs1 = 0.33 
     fs2 = 0.12
     
     relative_scale = ps*rel_levels_fitted[-3] + fs1*quarter_day + fs2*half_day
-    
     return risk_threshold(relative_scale)
 
-
-    
 
 
 
 def task_run(show_plot):    
     stations =  build_station_list()
 
+    consistent_stations = [station for station in stations if station not in inconsistent_typical_range_stations(stations)]
+
+
     # Update latest level data for all stations (to present time))
     update_water_levels(stations)
-
-    M = 5 #Selecting 5 stations with hgihest water levels
-    high_stations = stations_highest_rel_level(stations, M)
+    
+    #Uncomment out for refernce to typical scales of Highest and Lowest Water level stations
+   # M = 5 #Selecting 5 stations with hgihest water levels
+    #high_stations = stations_highest_rel_level(stations, M)
 
     
     dt = 3 #Number of days for levels history - too high and polyfit may not be accurate, too low and insufficient points
@@ -127,13 +123,20 @@ def task_run(show_plot):
     #Dictioanary of towns followed by numerical risk scaling (discrete)
     risk_level = {}
 
-    for station in high_stations:
-        dates, levels = fetch_measure_levels(station.measure_id, dt = datetime.timedelta(days = dt))
-  
-        risk_level[station.town] = risk_assessment(station, dates, levels, p, show_plot)
-
+   # for station in consistent_stations:
+    #    dates, levels = fetch_measure_levels(station.measure_id, dt = datetime.timedelta(days = dt))
+     #   risk_level[station.town] = risk_assessment(station, dates, levels, p, show_plot)
+      #  print(risk_level)
+    
+    for station in consistent_stations:
+        if station.town == "Brigg":
+            print("\n \n \n \n \n")
+        print("{}{}".format(station.town, station.typical_range))
+    
+   # for key, group in groupby(risk_level, lambda x: risk_level[x]):
+    #    print(key, group)
 
 
 if __name__ == "__main__":
-    show_plot = True
+    show_plot = False
     task_run(show_plot)
