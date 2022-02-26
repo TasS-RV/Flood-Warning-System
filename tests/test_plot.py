@@ -46,7 +46,7 @@ def test_plot_water_levels():
         datetime(2017, 1, 5)]
     levels = [0.2, 0.7, 0.95, 0.92, 1.02, 0.91, 0.64]
 
-    plot, = plot_water_levels(station, dates, levels, plot=False)
+    plot, = plot_water_levels(station, dates, levels, show_plot=False)
     x_plot, y_plot = plot.get_xydata().T
 
     test_dates = [date2num(date) for date in dates]

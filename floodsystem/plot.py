@@ -1,9 +1,9 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-def plot_water_levels(station, dates, levels, plot=True):
+def plot_water_levels(station, dates, levels, show_plot=True):
     # Plot
-    plot_ax = plt.plot(dates, levels)
+    plot = plt.plot(dates, levels)
 
     # Add axis labels, rotate date labels and add plot title
     plt.xlabel('Date')
@@ -11,15 +11,18 @@ def plot_water_levels(station, dates, levels, plot=True):
     plt.xticks(rotation=45)
     plt.title(station.name)
 
+    # Plot typical ranges
+    low, high = station.typical_range
+    plt.axhline(low, linestyle='--')
+    plt.axhline(high, linestyle='--')
+
     # Display plot
     plt.tight_layout()  # This makes sure plot does not cut off date labels
     
-   # plt.show() #Slight issue with firsts graph: Letcombe Bassette appears to be empty, therefore plot == True is not satified and pyplot window does not open
-
-    if plot == True:
+    if show_plot == True:
         plt.show()
 
-    return plot_ax
+    return plot
 
 
 
