@@ -29,7 +29,7 @@ def risk_threshold(relative_scale):
      
 #Loops runs once per station: station object, array of levels and timestamps (dates)
 
-def risk_assessment(station, dates, levels, p, plot = False, most_severe = False):
+def risk_assessment(station, dates, levels, p, plot = False):
 
     date_count = mplt.dates.date2num(dates)
     date_count_shifted = [day - date_count[-1] for day in date_count]
@@ -104,7 +104,7 @@ def risk_assessment(station, dates, levels, p, plot = False, most_severe = False
     
 
 
-def task_run(show_plot):    
+def task_run(show_plot,most_severe = False):    
     stations =  build_station_list()
 
     # Update latest level data for all stations (to present time))
@@ -139,9 +139,11 @@ def task_run(show_plot):
     for key, group in groupby(sorted(risk_level,key = lambda x: risk_level[x]), lambda x: risk_level[x]):
         if most_severe == False:
             print("Risk level: {}, Towns".format(key, tuple(group)))
+        
+        #If most severe == True, printing only most severe risk stations
         elif key == "SEVERE":
             print("Towns severely at risk of flooding: {}".format(tuple(group)))
 
 if __name__ == "__main__":
-    show_plot = False
-    task_run(show_plot, most_severe)
+    show_plot = False #Will show plots of water levels and linearised predictionn over next 1/2 day
+    task_run(show_plot, True)
