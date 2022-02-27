@@ -32,7 +32,7 @@ def task_run(show_plot,most_severe = False):
         dates, levels = fetch_measure_levels(station.measure_id, dt = datetime.timedelta(days = dt))
         if levels != None and len(dates) > 0:     
             try:               
-                risk_level[station.town] = risk_assessment(station, dates, levels, p, show_plot, most_severe)
+                risk_level[station.town] = risk_assessment(station, dates, levels, p, show_plot)
         
         ####Issue here: need to fix, for station North America - change the limit of n for when the loop breaks to reach the station with error
             except Exception:
@@ -53,5 +53,5 @@ def task_run(show_plot,most_severe = False):
 
 
 if __name__ == "__main__":
-    show_plot = True #Will show plots of water levels and linearised prediction over next 1/2 day
+    show_plot = False #Will show plots of water levels and linearised prediction over next 1/2 day
     task_run(show_plot, True) #True if only showing most severe towns

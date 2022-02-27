@@ -53,7 +53,7 @@ def level_state(gradient):
 
 #Loops runs once per station: station object, array of levels and timestamps (dates)
 
-def risk_assessment(station, dates, levels, p, plot = False, severe_state = False):
+def risk_assessment(station, dates, levels, p, plot = False):
 
     date_count = mplt.dates.date2num(dates)
     date_count_shifted = [day - date_count[-1] for day in date_count]
@@ -108,15 +108,7 @@ def risk_assessment(station, dates, levels, p, plot = False, severe_state = Fals
     rel_levels_fitted.append(quarter_day) #Using rate of change at present 
     rel_levels_fitted.append(half_day)
     
-
-    #Scaling factors based on relative importance of present (ps) and quarter day (fs1) and half day (fs2)
-    ps = 0.55
-    fs1 = 0.33 
-    fs2 = 0.12
-    
-    relative_scale = ps*rel_levels_fitted[-3] + fs1*quarter_day + fs2*half_day
-
-       #Graphical display of predicted water level:
+    #Graphical display of predicted water level:
     if plot == True:
         plt.plot(date_count_shifted, rel_levels_fitted, color = 'g', label = "Linearised next value") #Values with polynomial 
     # plt.plot(date_count_shifted, [eval(deriv) for x in rel_levels], color = 'o', label = "First derivative of fitted polynomial")
@@ -125,15 +117,13 @@ def risk_assessment(station, dates, levels, p, plot = False, severe_state = Fals
     
         plt.title(station.town)
         plt.legend()
-       
-          
-        #Specialised plot_show for towns at severe risk:
-        if severe_state == True:
-            if risk_assessment(relative_scale) == "SEVERE":
-                plt.show()
-        elif severe_state == False:
-            plt.show()
-    
+        plt.show()
 
+    #Scaling factors based on relative importance of present (ps) and quarter day (fs1) and half day (fs2)
+    ps = 0.55
+    fs1 = 0.33 
+    fs2 = 0.12
+    
+    relative_scale = ps*rel_levels_fitted[-3] + fs1*quarter_day + fs2*half_day
     return risk_threshold(relative_scale), level_state(grad_today)
     
