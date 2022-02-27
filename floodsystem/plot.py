@@ -79,6 +79,5 @@ def plot_water_level_with_fit(station, dates, levels, p, range_plot = True): #By
         plt.show()
 
         return real_plot, poly_plot 
-    
 
 

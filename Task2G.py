@@ -119,7 +119,7 @@ def task_run(show_plot,most_severe = False):
     risk_level = {}
     
     for n, station in enumerate(consistent_stations, 0):
-        if n > 40:
+        if n > 100:
             break
 
         dates, levels = fetch_measure_levels(station.measure_id, dt = datetime.timedelta(days = dt))
