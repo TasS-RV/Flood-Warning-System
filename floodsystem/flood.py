@@ -1,5 +1,4 @@
 from .station import MonitoringStation
-import datetime
 from matplotlib import pyplot as plt
 import matplotlib as mplt
 import numpy as np
@@ -24,7 +23,6 @@ def stations_highest_rel_level(stations, N):
 
 
 #Functions for Task 2G:
-
 
 #Arbitrarily decided thresholds: 1 - Low, 2 - Moderate, 3 - High, 4 - Severe (Risk levels for flooding)
 def risk_threshold(relative_scale):
