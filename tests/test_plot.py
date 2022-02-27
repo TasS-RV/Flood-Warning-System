@@ -53,3 +53,8 @@ def test_plot_water_levels():
 
     assert (x_plot == test_dates).all()
     assert (y_plot == levels).all()
+
+
+#Can test function: by creating a set of x and y parameters, and checking np.plyfit value agreement rounded to i.e. 1 or 2 dp against the real data
+#Test data should be a polynomial itself
+#First plot is the real plot for level and dates data, 2nd plot is the polynomial fit plot for reference
