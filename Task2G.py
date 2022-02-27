@@ -1,107 +1,14 @@
+#Filesystem imports for functions:
 from difflib import context_diff
 from floodsystem.datafetcher import fetch_measure_levels
-from floodsystem.flood import stations_highest_rel_level
 from floodsystem.stationdata import build_station_list, update_water_levels
-from floodsystem.station import inconsistent_typical_range_stations, MonitoringStation
+from floodsystem.station import inconsistent_typical_range_stations
+from floodsystem.flood import risk_assessment
 
-
+#Library imports:
 import datetime
-from matplotlib import pyplot as plt
-import matplotlib as mplt
-import numpy as np
 from itertools import groupby
 
-#Arbitrarily decided thresholds: 1 - Low, 2 - Moderate, 3 - High, 4 - Severe (Risk levels for flooding)
-
-def risk_threshold(relative_scale):
-    low = 0.0
-    moderate = 0.94
-    high = 1.9
-
-    if relative_scale <= low:
-        return "LOW"
-    elif low < relative_scale <= moderate:
-        return "MODERATE"
-    elif moderate < relative_scale <= high:
-        return "HIGH"
-    elif relative_scale > high:
-        return "SEVERE"
-     
-#Loops runs once per station: station object, array of levels and timestamps (dates)
-
-def risk_assessment(station, dates, levels, p, plot = False):
-
-    date_count = mplt.dates.date2num(dates)
-    date_count_shifted = [day - date_count[-1] for day in date_count]
-    date_count_shifted.reverse()
-    
-
-    #Value given relative to typical High value: shifted by Low value
-    rel_levels  = [level/(station.typical_range[1] - station.typical_range[0]) for level in levels]
-    
-    coeff = np.polyfit(date_count_shifted, rel_levels, p)  #Coefficient finding for fitting level and dates data with polynomial or degree p
-    fitted_levels = np.poly1d(coeff) #Y-values for polynomial fit relative to correcponding x values of date_count_shifted
-
-    #Linearisation performed with time-step 1 (equivalent to 1 day)
-    #eval(.format((date_count_shifted[-1]+1),))
-
-    coeff_series = [c for c in coeff]
-    coeff_series.reverse() #To reverse in order of increasing exponents
-
-    func = ""
-    for expo, c in enumerate(coeff_series, 0): #Last coeff. is constant term, equivalent to x^0
-        func = func + str(c) + "*(x**{})+".format(expo)
-    func = func + "0" #Due to extra  at end
-    
-    deriv = ""
-    #Can apply algorithmic differentiation method for polynomial:
-    for expo, c in enumerate(coeff_series[1:], 1): #Last coeff. is constant term, equivalent to x^0
-        deriv = deriv + str(c*expo) + "*(x**{})+".format(expo-1)
-    deriv = deriv + "0"
-    #Presenting functions for testing:#print("\n Normal function: {}".format(func))#print("Derivative of function: {}".format(deriv))
-    
-    
-    #Linearisation:
-    rel_levels_fitted = list(fitted_levels(date_count_shifted))#np.array must be converted into list for append function use
-    x = date_count_shifted[-1] #Present day value
-
-
-    #Pre-linearisation graphs:
-    if plot == True:
-    #[eval(deriv) for x in rel_levels] generates a list of values
-        plt.plot(date_count_shifted, rel_levels, color = 'b', label = "True values")
-        plt.plot(date_count_shifted, rel_levels_fitted, color = 'r', label = "Fitted values") #Values with polynomial
-
-
-    #1/4 day value
-    quarter_day = rel_levels_fitted[-1] + eval(deriv)*0.25
-    date_count_shifted.append(x+0.25)
-    #1/2 Day value
-    half_day = rel_levels_fitted[-1] + eval(deriv)*0.5
-    date_count_shifted.append(x+0.5)
-
-    rel_levels_fitted.append(quarter_day) #Using rate of change at present 
-    rel_levels_fitted.append(half_day)
-    
-    #Graphical display of predicted water level:
-    if plot == True:
-        plt.plot(date_count_shifted, rel_levels_fitted, color = 'g', label = "Linearised next value") #Values with polynomial 
-    # plt.plot(date_count_shifted, [eval(deriv) for x in rel_levels], color = 'o', label = "First derivative of fitted polynomial")
-        plt.xlabel("Days TO present from 3 days ago")
-        plt.ylabel("Relative water level to typical range values.")
-    
-        plt.title(station.town)
-        plt.legend()
-        plt.show()
-
-    #Scaling factors based on relative importance of present (ps) and quarter day (fs1) and half day (fs2)
-    ps = 0.55
-    fs1 = 0.33 
-    fs2 = 0.12
-    
-    relative_scale = ps*rel_levels_fitted[-3] + fs1*quarter_day + fs2*half_day
-    return risk_threshold(relative_scale)
-    
 
 
 def task_run(show_plot,most_severe = False):    
@@ -119,7 +26,7 @@ def task_run(show_plot,most_severe = False):
     risk_level = {}
     
     for n, station in enumerate(consistent_stations, 0):
-        if n > 100:
+        if n > 40:
             break
 
         dates, levels = fetch_measure_levels(station.measure_id, dt = datetime.timedelta(days = dt))
@@ -136,14 +43,15 @@ def task_run(show_plot,most_severe = False):
                 print(station)        
 
     #Key note: groupby assumes the list is sorted in terms of criteria of grouping
-    for key, group in groupby(sorted(risk_level,key = lambda x: risk_level[x]), lambda x: risk_level[x]):
+    for key, group in groupby(sorted(risk_level,key = lambda x: risk_level[x][0]), lambda x: risk_level[x][0]):
         if most_severe == False:
-            print("Risk level: {}, Towns".format(key, tuple(group)))
+            print("Risk level: {}, Towns and state of water level {}:".format(key, [(town, risk_level[town][1]) for town in group]))
         
         #If most severe == True, printing only most severe risk stations
         elif key == "SEVERE":
-            print("Towns severely at risk of flooding: {}".format(tuple(group)))
+            print("Towns severely at risk of flooding, and state of water level: {}".format([(town, risk_level[town][1]) for town in group]))
+
 
 if __name__ == "__main__":
-    show_plot = False #Will show plots of water levels and linearised predictionn over next 1/2 day
-    task_run(show_plot, True)
+    show_plot = False #Will show plots of water levels and linearised prediction over next 1/2 day
+    task_run(show_plot, True) #True if only showing most severe towns
