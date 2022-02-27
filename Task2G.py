@@ -2,7 +2,8 @@ from difflib import context_diff
 from floodsystem.datafetcher import fetch_measure_levels
 from floodsystem.flood import stations_highest_rel_level
 from floodsystem.stationdata import build_station_list, update_water_levels
-from floodsystem.station import inconsistent_typical_range_stations
+from floodsystem.station import inconsistent_typical_range_stations, MonitoringStation
+
 
 import datetime
 from matplotlib import pyplot as plt
@@ -105,10 +106,10 @@ def risk_assessment(station, dates, levels, p, plot = False):
 
 def task_run(show_plot):    
     stations =  build_station_list()
+    print(station.relative_water_level() for station in stations)
 
-    consistent_stations = [station for station in stations if station not in inconsistent_typical_range_stations(stations)]
-
-
+    consistent_stations = [station for station in stations if (station.relative_water_level() != None and station.relative_water_level() <= 50)]
+   
     # Update latest level data for all stations (to present time))
     update_water_levels(stations)
     
@@ -123,16 +124,32 @@ def task_run(show_plot):
     #Dictioanary of towns followed by numerical risk scaling (discrete)
     risk_level = {}
 
-   # for station in consistent_stations:
+    #for station in consistent_stations:
     #    dates, levels = fetch_measure_levels(station.measure_id, dt = datetime.timedelta(days = dt))
-     #   risk_level[station.town] = risk_assessment(station, dates, levels, p, show_plot)
-      #  print(risk_level)
+    #    risk_level[station.town] = risk_assessment(station, dates, levels, p, show_plot)
+    #    print(risk_level)
     
-    for station in consistent_stations:
-        if station.town == "Brigg":
+    print(consistent_stations)
+    for n, station in enumerate(consistent_stations):
+        
+        if station.town == "Sleaford":
+            print("{}{}".format(station.town, station.typical_range))
+            dates, levels = fetch_measure_levels(station.measure_id, dt = datetime.timedelta(days = dt))
+            print("{}\n{}".format(dates, levels))
+            
             print("\n \n \n \n \n")
+            print("{}".format(consistent_stations[n+1]))
+            
+            dates, levels = fetch_measure_levels(consistent_stations[n+1].measure_id, dt = datetime.timedelta(days = dt))
+            print("{}\n{}".format(dates, levels))
+
+            break
+
         print("{}{}".format(station.town, station.typical_range))
-    
+        #dates, levels = fetch_measure_levels(station.measure_id, dt = datetime.timedelta(days = dt))
+        #print("{}\n{}".format(dates, levels))
+        
+        
    # for key, group in groupby(risk_level, lambda x: risk_level[x]):
     #    print(key, group)
 
