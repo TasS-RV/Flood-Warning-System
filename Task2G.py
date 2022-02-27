@@ -19,17 +19,17 @@ def risk_threshold(relative_scale):
     high = 1.9
 
     if relative_scale <= low:
-        return 1
+        return "LOW"
     elif low < relative_scale <= moderate:
-        return 2
+        return "MODERATE"
     elif moderate < relative_scale <= high:
-        return 3
+        return "HIGH"
     elif relative_scale > high:
-        return 4
+        return "SEVERE"
      
 #Loops runs once per station: station object, array of levels and timestamps (dates)
 
-def risk_assessment(station, dates, levels, p, plot = False):
+def risk_assessment(station, dates, levels, p, plot = False, most_severe = False):
 
     date_count = mplt.dates.date2num(dates)
     date_count_shifted = [day - date_count[-1] for day in date_count]
@@ -104,10 +104,6 @@ def risk_assessment(station, dates, levels, p, plot = False):
     
 
 
-
-
-
-
 def task_run(show_plot):    
     stations =  build_station_list()
 
@@ -116,53 +112,36 @@ def task_run(show_plot):
     
     consistent_stations = [station for station in stations if station not in inconsistent_typical_range_stations(stations)]
 
-  #  print(consistent_stations)
-    
     dt = 3 #Number of days for levels history - too high and polyfit may not be accurate, too low and insufficient points
     p = 6 #Selecting the maximum order of the polynomial for curve fitting
     
     #Dictionary of towns followed by numerical risk scaling (discrete)
     risk_level = {}
-
-    for n, station in enumerate(consistent_stations, 0):
-        try:
-            dates, levels = fetch_measure_levels(station.measure_id, dt = datetime.timedelta(days = dt))
-            if levels != None and len(dates) > 0:     
-                  
-                try:
-                   
-                    risk_level[station.town] = risk_assessment(station, dates, levels, p, show_plot)
-                
-                except Exception:
-                    print("Tripped in function") 
-
-                    print(station.name)
-                    print(levels)
-                    print(dates)
-                    print("Length of values levels{} dates {}".format(len(levels), len(dates)))
-                    print("\n\n\n\n")
-                    print(station)
-
-        except Exception:
-            print("Tripped at datafetcher")
-
-            print(station.name)
-            print(levels)
-            print(dates)
-            print("Length of values levels{} dates {}".format(len(levels), len(dates)))
-            print("\n\n\n\n")
-            print(station)
-
-        
-            
-       # print(risk_level)
     
-        
-        
-   # for key, group in groupby(risk_level, lambda x: risk_level[x]):
-    #    print(key, group)
+    for n, station in enumerate(consistent_stations, 0):
+        if n > 40:
+            break
 
+        dates, levels = fetch_measure_levels(station.measure_id, dt = datetime.timedelta(days = dt))
+        if levels != None and len(dates) > 0:     
+            try:               
+                risk_level[station.town] = risk_assessment(station, dates, levels, p, show_plot)
+        
+        ####Issue here: need to fix, for station North America - change the limit of n for when the loop breaks to reach the station with error
+            except Exception:
+                print("Tripped in function") 
+                print(levels)
+                print(dates)
+                print("\n\n\n")
+                print(station)        
+
+    #Key note: groupby assumes the list is sorted in terms of criteria of grouping
+    for key, group in groupby(sorted(risk_level,key = lambda x: risk_level[x]), lambda x: risk_level[x]):
+        if most_severe == False:
+            print("Risk level: {}, Towns".format(key, tuple(group)))
+        elif key == "SEVERE":
+            print("Towns severely at risk of flooding: {}".format(tuple(group)))
 
 if __name__ == "__main__":
     show_plot = False
-    task_run(show_plot)
+    task_run(show_plot, most_severe)
