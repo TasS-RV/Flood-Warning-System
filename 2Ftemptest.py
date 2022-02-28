@@ -88,24 +88,33 @@ def test_plot_water_level_with_fit():
     fitted_plot, = plt.plot(dates_shifted, poly(dates_shifted), color = 'b', label = "Best-fit Curve")
     plt.plot(dates_shifted, levels, color = 'r')
     
-    x = fitted_plot.get_xdata().T
-    y = fitted_plot.get_ydata().T
+
+    x = fitted_plot.get_xdata()
+    y = fitted_plot.get_ydata()
+
+    for  real_x, fit_x in zip(dates_shifted, x):
+        print(real_x, fit_x)
+        assert (abs(real_x - fit_x) < 0.001)
+    
+    for  real_y, fit_y in zip(levels, y):
+        print(real_y, fit_y)
+        assert (abs(real_y - fit_y) < 0.001)
+        
+
+
+
+
+
+
     #plt.show()
     
     # Throws: ValueError: The truth value of an array with more than one element is ambiguous. Use a.any() or a.all()
     # If attempting to check equality between array objects on their own - without specifying number
-    #assert (x == dates_shifted).all()
-    #assert (y == levels).all()
-    
-    print(y)
-    print('\n\n')
-    print(levels)
-    #for i in range(1,len(station)+1):
+   # assert (x == dates_shifted).all()
+  #  assert (y == levels).all()
 
 
-
-
-    M = 5 #Selecting 5 stations with highest water levels
+    M = 4 #Selecting 5 stations with highest water levels
     level_stations = stations_highest_rel_level(stations, M)
 
     p = 4 #Selecting the maximum order of the polynomial for curve fitting
