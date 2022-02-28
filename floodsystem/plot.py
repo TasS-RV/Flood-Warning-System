@@ -31,7 +31,7 @@ def plot_water_levels(station, dates, levels, show_plot=True):
 
 
 
-def plot_water_level_with_fit(station, dates, levels, p, range_plot = True): #By default choose to plot the typical range High and Low
+def plot_water_level_with_fit(station, dates, levels, p, range_plot=True, show_plot=True): #By default choose to plot the typical range High and Low
 
     #Initially due to empty plot stations with anomalous data
     if len(levels) == 0 or len(dates) == 0: 
@@ -76,7 +76,8 @@ def plot_water_level_with_fit(station, dates, levels, p, range_plot = True): #By
 
     #Display plot
         plt.tight_layout()  # This makes sure plot does not cut off date labels
-        plt.show()
+        if show_plot == True:
+            plt.show()
 
         return real_plot, poly_plot 
 

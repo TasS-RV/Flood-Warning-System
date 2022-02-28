@@ -54,6 +54,7 @@ def level_state(gradient):
 #Loops runs once per station: station object, array of levels and timestamps (dates)
 
 def risk_assessment(station, dates, levels, p, plot = False):
+    print(station.name)
 
     date_count = mplt.dates.date2num(dates)
     date_count_shifted = [day - date_count[-1] for day in date_count]
@@ -61,13 +62,19 @@ def risk_assessment(station, dates, levels, p, plot = False):
     
 
     #Value given relative to typical High value: shifted by Low value
-    rel_levels  = [level/(station.typical_range[1] - station.typical_range[0]) for level in levels]
+    date_count = []
+    rel_levels = []
+    for i in range(len(levels)):
+        level = levels[i]
+        if level != None:
+            rel_levels.append(level/(station.typical_range[1] - station.typical_range[0]))
+            date_count.append(date_count_shifted[i])
     
-    coeff = np.polyfit(date_count_shifted, rel_levels, p)  #Coefficient finding for fitting level and dates data with polynomial or degree p
-    fitted_levels = np.poly1d(coeff) #Y-values for polynomial fit relative to correcponding x values of date_count_shifted
+    coeff = np.polyfit(date_count, rel_levels, p)  #Coefficient finding for fitting level and dates data with polynomial or degree p
+    fitted_levels = np.poly1d(coeff) #Y-values for polynomial fit relative to correcponding x values of date_count
 
     #Linearisation performed with time-step 1 (equivalent to 1 day)
-    #eval(.format((date_count_shifted[-1]+1),))
+    #eval(.format((date_count[-1]+1),))
 
     coeff_series = [c for c in coeff]
     coeff_series.reverse() #To reverse in order of increasing exponents
@@ -85,33 +92,33 @@ def risk_assessment(station, dates, levels, p, plot = False):
     #Presenting functions for testing:#print("\n Normal function: {}".format(func))#print("Derivative of function: {}".format(deriv))
     
     #Linearisation:
-    rel_levels_fitted = list(fitted_levels(date_count_shifted))#np.array must be converted into list for append function use
-    x = date_count_shifted[-1] #Present day value
+    rel_levels_fitted = list(fitted_levels(date_count))#np.array must be converted into list for append function use
+    x = date_count[-1] #Present day value
 
 
     #Pre-linearisation graphs:
     if plot == True:
     #[eval(deriv) for x in rel_levels] generates a list of values
-        plt.plot(date_count_shifted, rel_levels, color = 'b', label = "True values")
-        plt.plot(date_count_shifted, rel_levels_fitted, color = 'r', label = "Fitted values") #Values with polynomial
+        plt.plot(date_count, rel_levels, color = 'b', label = "True values")
+        plt.plot(date_count, rel_levels_fitted, color = 'r', label = "Fitted values") #Values with polynomial
     
     #Current rate of change
     grad_today = eval(deriv)
 
     #1/4 day value
     quarter_day = rel_levels_fitted[-1] + grad_today*0.25
-    date_count_shifted.append(x+0.25)
+    date_count.append(x+0.25)
     #1/2 Day value
     half_day = rel_levels_fitted[-1] + grad_today*0.5
-    date_count_shifted.append(x+0.5)
+    date_count.append(x+0.5)
 
     rel_levels_fitted.append(quarter_day) #Using rate of change at present 
     rel_levels_fitted.append(half_day)
     
     #Graphical display of predicted water level:
     if plot == True:
-        plt.plot(date_count_shifted, rel_levels_fitted, color = 'g', label = "Linearised next value") #Values with polynomial 
-    # plt.plot(date_count_shifted, [eval(deriv) for x in rel_levels], color = 'o', label = "First derivative of fitted polynomial")
+        plt.plot(date_count, rel_levels_fitted, color = 'g', label = "Linearised next value") #Values with polynomial 
+    # plt.plot(date_count, [eval(deriv) for x in rel_levels], color = 'o', label = "First derivative of fitted polynomial")
         plt.xlabel("Days TO present from 3 days ago")
         plt.ylabel("Relative water level to typical range values.")
     
