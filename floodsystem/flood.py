@@ -54,7 +54,10 @@ def level_state(gradient):
 #Loops runs once per station: station object, array of levels and timestamps (dates)
 
 def risk_assessment(station, dates, levels, p, plot = False):
-    print(station.name)
+
+  
+
+    #print(station.name)
 
     date_count = mplt.dates.date2num(dates)
     date_count_shifted = [day - date_count[-1] for day in date_count]
@@ -66,8 +69,8 @@ def risk_assessment(station, dates, levels, p, plot = False):
     rel_levels = []
     for i in range(len(levels)):
         level = levels[i]
-        if level != None:
-            rel_levels.append(level/(station.typical_range[1] - station.typical_range[0]))
+        if level != None: 
+            rel_levels.append((level-station.typical_range[0])/(station.typical_range[1] - station.typical_range[0]))
             date_count.append(date_count_shifted[i])
     
     coeff = np.polyfit(date_count, rel_levels, p)  #Coefficient finding for fitting level and dates data with polynomial or degree p
@@ -130,7 +133,16 @@ def risk_assessment(station, dates, levels, p, plot = False):
     ps = 0.55
     fs1 = 0.33 
     fs2 = 0.12
-    
-    relative_scale = ps*rel_levels_fitted[-3] + fs1*quarter_day + fs2*half_day
+
+    #Additional coefficient multiplier depending on if the water level is rising or falling:
+    if grad_today > 0:
+        risk_factor = 1.25
+    if grad_today < 0:
+        risk_factor = 0.75
+    else:
+        risk_factor = 1   
+
+    relative_scale = risk_factor*(ps*rel_levels_fitted[-3] + fs1*quarter_day + fs2*half_day)
+
     return risk_threshold(relative_scale), level_state(grad_today)
     

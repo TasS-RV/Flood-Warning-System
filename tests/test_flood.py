@@ -1,7 +1,15 @@
 """Unit test for flood module"""
 
+import matplotlib.pyplot as plt
+from matplotlib.dates import date2num
+from datetime import datetime, timedelta
+import numpy as np
+
+
+
 from floodsystem.station import MonitoringStation
-from floodsystem.flood import stations_levels_over_threshold, stations_highest_rel_level
+from floodsystem.flood import risk_assessment, stations_levels_over_threshold, stations_highest_rel_level
+import datetime
 
 def create_test_stations(n):
 
@@ -65,3 +73,5 @@ def test_stations_highest_rel_level():
     assert result[1]  == stations[6]
     assert result[2]  == stations[4]
     assert result[3]  == stations[2]
+
+
