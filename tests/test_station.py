@@ -1,5 +1,7 @@
 """Unit test for the station module"""
 
+from datetime import datetime, timedelta
+import numpy as np
 from floodsystem.station import MonitoringStation
 from floodsystem.station import inconsistent_typical_range_stations
 
@@ -31,7 +33,6 @@ def create_test_stations(n):
         #Checking station created correctly:
         station_create_test(s, s_id, m_id, label, coord, trange, river, town)
 
-  
         stations.append(s) #Adding randomly generated Station into list of stations
 
     return stations
