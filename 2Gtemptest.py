@@ -87,6 +87,7 @@ def test_risk_assessment():
     risk_level = {}
 
     for n, station in enumerate(stations, 1):
+        
         if n%2 == 0:
             poly_levels = "(-x-1)**4+(-x-1)**3-(-x-1)**2-(-x-1)+{}".format(str(n))
         else:

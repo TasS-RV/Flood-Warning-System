@@ -22,38 +22,42 @@ def stations_highest_rel_level(stations, N):
   # ^ Used as a reference test to see if the top 5 station water levels were feasible: as significantly higher than the typical range High
 
 
-#Functions for Task 2G:
 
-#Arbitrarily decided thresholds: 1 - Low, 2 - Moderate, 3 - High, 4 - Severe (Risk levels for flooding)
-def risk_threshold(relative_scale):
-    low = 0.0
-    moderate = 0.94
-    high = 1.9
-
-    if relative_scale <= low:
-        return "LOW"
-    elif low < relative_scale <= moderate:
-        return "MODERATE"
-    elif moderate < relative_scale <= high:
-        return "HIGH"
-    elif relative_scale > high:
-        return "SEVERE"
-     
-#Gives predicted state of water level: if rising or falling or stagnating
-def level_state(gradient):
-    if gradient > 0:
-        return "Rising"
-    elif gradient == 0:
-        return "Stagnating"
-    elif gradient < 0:
-        return "Falling"
-    
-    
 
 
 #Loops runs once per station: station object, array of levels and timestamps (dates)
 
 def risk_assessment(station, dates, levels, p, plot = False):
+
+
+
+
+    #Functions for Task 2G:
+
+    #Arbitrarily decided thresholds: 1 - Low, 2 - Moderate, 3 - High, 4 - Severe (Risk levels for flooding)
+    def risk_threshold(relative_scale):
+        low = 0.0
+        moderate = 0.94
+        high = 1.9
+
+        if relative_scale <= low:
+            return "LOW"
+        elif low < relative_scale <= moderate:
+            return "MODERATE"
+        elif moderate < relative_scale <= high:
+            return "HIGH"
+        elif relative_scale > high:
+            return "SEVERE"
+        
+    #Gives predicted state of water level: if rising or falling or stagnating
+    def level_state(gradient):
+        if gradient > 0:
+            return "Rising"
+        elif gradient == 0:
+            return "Stagnating"
+        elif gradient < 0:
+            return "Falling"
+        
 
   
 

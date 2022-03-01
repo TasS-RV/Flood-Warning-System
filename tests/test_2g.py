@@ -7,6 +7,7 @@ import numpy as np
 
 from floodsystem.station import MonitoringStation
 from floodsystem.flood import risk_assessment
+from floodsystem.flood import stations_levels_over_threshold, stations_highest_rel_level
 
 
 def station_create_test(s, s_id, m_id, label, coord, trange, river, town):
@@ -30,7 +31,7 @@ def create_test_stations(n):
         coord = (i*1.5, i*1.5)
         trange = (5, 25)
         river = "River X"
-        town = "Town {}".format(i)
+        town = "My Town"
         s = MonitoringStation(s_id, m_id, label, coord, trange, river, town)
 
         #Checking station created correctly:
@@ -95,6 +96,7 @@ def test_risk_assessment():
         levels = [eval(poly_levels) for x in dates_shifted]
         station.typical_range = [5,7]#Around midrange of the levels plots
         station.latest_level =  levels[-1] #Most recent level value
+        station.town = town = "Town {}".format(n-1)
 
         risk_level[station.town] = risk_assessment(station, dates, levels, 4, False)
         
@@ -102,5 +104,8 @@ def test_risk_assessment():
         risk_assertions(station, risk_level[station.town][0],  risk_level[station.town][1])
 
  
+
+
+
 
 

@@ -8,8 +8,12 @@ import numpy as np
 
 
 from floodsystem.station import MonitoringStation
-from floodsystem.flood import risk_assessment, stations_levels_over_threshold, stations_highest_rel_level
+from floodsystem.flood import stations_levels_over_threshold, stations_highest_rel_level
 import datetime
+from floodsystem.flood import risk_assessment
+
+"""Does not appear to work when I place the test_risk_assessment files into this test file, or these tests into the test_2g file - either way 'module' object is not callable turns up"""
+
 
 def create_test_stations(n):
 
@@ -73,5 +77,11 @@ def test_stations_highest_rel_level():
     assert result[1]  == stations[6]
     assert result[2]  == stations[4]
     assert result[3]  == stations[2]
+
+
+
+
+
+
 
 
