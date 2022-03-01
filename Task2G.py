@@ -10,8 +10,8 @@ import datetime
 from itertools import groupby
 
 
-
-def task_run(show_plot,most_severe = False):    
+def task_run(show_plot,most_severe = False,limit_range=-1, demo=False):   
+    
     stations =  build_station_list()
 
     # Update latest level data for all stations (to present time))
@@ -25,17 +25,27 @@ def task_run(show_plot,most_severe = False):
     #Dictionary of towns followed by numerical risk scaling (discrete)
     risk_level = {}
     
-    i = 0
+    i = 1
+    limiter = 0
     for station in consistent_stations:
+
+        if limit_range > 0:
+            if limiter >= limit_range:
+                break
+
+            limiter += 1
+
         #Required for observing progression of output: very large number of stations, takes a long period of time
-        print('Station', i)
+        print('Station ' + str(i) + ': ' + station.name)
         i += 1
     
         dates, levels = fetch_measure_levels(station.measure_id, dt = datetime.timedelta(days = dt))
         if levels != None and len(dates) > 0:
-            risk_level[station.town] = risk_assessment(station, dates, levels, p, show_plot)
+            risk_level[station.town] = risk_assessment(station, dates, levels, p, show_plot, demo=demo)
 
     #Key note: groupby assumes the list is sorted in terms of criteria of grouping
+    
+    keys = []
     for key, group in groupby(sorted(risk_level,key = lambda x: risk_level[x][0]), lambda x: risk_level[x][0]):
         if most_severe == False:
             print("Risk level: {}, Towns and state of water level {}:".format(key, [(town, risk_level[town][1]) for town in group]))
@@ -44,7 +54,12 @@ def task_run(show_plot,most_severe = False):
         elif key == "SEVERE":
             print("Towns severely at risk of flooding, and state of water level: {}".format([(town, risk_level[town][1]) for town in group]))
 
+        keys.append(key)
+
+    if 'SEVERE' not in keys:
+        print('No towns at risk.')
+
 
 if __name__ == "__main__":
     show_plot = False #Will show plots of water levels and linearised prediction over next 1/2 day
-    task_run(show_plot, True) #True if only showing most severe towns
+    task_run(show_plot, most_severe=False, limit_range=40, demo=True) #True if only showing most severe towns

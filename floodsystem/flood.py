@@ -27,7 +27,7 @@ def stations_highest_rel_level(stations, N):
 
 #Loops runs once per station: station object, array of levels and timestamps (dates)
 
-def risk_assessment(station, dates, levels, p, plot = False):
+def risk_assessment(station, dates, levels, p, plot = False, demo = False):
 
 
 
@@ -37,8 +37,8 @@ def risk_assessment(station, dates, levels, p, plot = False):
     #Arbitrarily decided thresholds: 1 - Low, 2 - Moderate, 3 - High, 4 - Severe (Risk levels for flooding)
     def risk_threshold(relative_scale):
         low = 0.0
-        moderate = 0.94
-        high = 1.9
+        moderate = 0.50 if demo else 0.94
+        high = 0.75 if demo else 1.9
 
         if relative_scale <= low:
             return "LOW"

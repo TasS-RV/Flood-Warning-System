@@ -5,19 +5,12 @@ from datetime import datetime, timedelta
 import numpy as np
 
 
+
 from floodsystem.station import MonitoringStation
-from floodsystem.flood import risk_assessment
 from floodsystem.flood import stations_levels_over_threshold, stations_highest_rel_level
+from floodsystem.flood import risk_assessment
 
-
-def station_create_test(s, s_id, m_id, label, coord, trange, river, town):
-    assert s.station_id == s_id
-    assert s.measure_id == m_id
-    assert s.name == label
-    assert s.coord == coord
-    assert s.typical_range == trange
-    assert s.river == river
-    assert s.town == town
+"""Does not appear to work when I place the test_risk_assessment files into this test file, or these tests into the test_2g file - either way 'module' object is not callable turns up"""
 
 
 def create_test_stations(n):
@@ -29,42 +22,88 @@ def create_test_stations(n):
         m_id = "m-id-" + str(i)
         label = "station" + str(i)
         coord = (i*1.5, i*1.5)
-        trange = (5, 25)
+        trange = (0, 10)
         river = "River X"
         town = "My Town"
         s = MonitoringStation(s_id, m_id, label, coord, trange, river, town)
-
-        #Checking station created correctly:
-        station_create_test(s, s_id, m_id, label, coord, trange, river, town)
-
+         
   
         stations.append(s) #Adding randomly generated Station into list of stations
 
     return stations
 
+def test_stations_level_over_threshold():
+
+    threshold = 0.7
+
+    stations = create_test_stations(7)
+    stations[0].latest_level = None # Test unavailable data
+    stations[1].latest_level = 9
+    stations[2].latest_level = 7
+    stations[3].latest_level = 4
+    stations[4].latest_level = 8
+    stations[5].latest_level = 9.5
+    stations[6].latest_level = 9
+    
+    stations[1].typical_range = (2, 1)  # Test inconsistent range data
+
+    result = stations_levels_over_threshold(stations, threshold)
+
+    assert result == sorted(result, key=lambda x: x[0].relative_water_level(), reverse=True)
+    assert len(result) == 3
+    assert [level for station, level in result] == [0.95, 0.9, 0.8]
+
+def test_stations_highest_rel_level():
+    
+    stations = create_test_stations(7)
+    stations[0].latest_level = None # Test unavailable data
+    stations[1].latest_level = 9
+    stations[2].latest_level = 7
+    stations[3].latest_level = 4
+    stations[4].latest_level = 8
+    stations[5].latest_level = 9.5
+    stations[6].latest_level = 9
+    
+    stations[1].typical_range = (2, 1)  # Test inconsistent range data
+
+    result = stations_highest_rel_level(stations, 4)
+
+
+    assert result == sorted(result, key=lambda x: x.relative_water_level(), reverse=True)
+    assert len(result) == 4
+    assert result[0]  == stations[5]
+    assert result[1]  == stations[6]
+    assert result[2]  == stations[4]
+    assert result[3]  == stations[2]
+
+
+
+
+
+
 #Shifted graphs of individual stations were plotted, and linearation performed and weighting risk factor calculated to determine the Flood Risk and Water level rising/ falling state"
 
 def risk_assertions(station, risk, state):
     if station.town == "Town 0":
-        assert (risk == "LOW", state == "Falling")
+        assert (risk == "LOW" and state == "Falling")
     
     elif station.town == "Town 1":
-        assert (risk == "LOW", state == "Rising")
+        assert (risk == "LOW" and state == "Rising")
     
     elif station.town == "Town 5":
-        assert (risk == "MODERATE", state == "Rising")
+        assert (risk == "MODERATE" and state == "Rising")
+    
+   # elif station.town == "Town 6":
+    #    assert (risk == "MODERATE" and state == "Falling")
     
     elif station.town == "Town 6":
-        assert (risk == "MODERATE", state == "Falling")
+        assert (risk == "HIGH" and state == "Falling")
     
     elif station.town == "Town 7":
-        assert (risk == "HIGH", state == "Rising")
+        assert (risk == "SEVERE" and state == "Rising")
     
     elif station.town == "Town 8":
-        assert (risk == "HIGH", state == "Falling")
-    
-    elif station.town == "Town 9":
-        assert (risk == "SEVERE", state == "Rising")
+        assert (risk == "SEVERE" and state == "Falling")
     
     else: 
         pass
@@ -99,13 +138,9 @@ def test_risk_assessment():
         station.town = town = "Town {}".format(n-1)
 
         risk_level[station.town] = risk_assessment(station, dates, levels, 4, False)
-        
+        print("{} {} {}".format(station.town, risk_level[station.town][0],risk_level[station.town][1]))
         #Assertions only from a selection of stations to test each and combination of risk:
         risk_assertions(station, risk_level[station.town][0],  risk_level[station.town][1])
 
- 
 
-
-
-
-
+#test_risk_assessment()

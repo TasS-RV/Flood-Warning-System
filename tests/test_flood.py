@@ -9,7 +9,6 @@ import numpy as np
 
 from floodsystem.station import MonitoringStation
 from floodsystem.flood import stations_levels_over_threshold, stations_highest_rel_level
-import datetime
 from floodsystem.flood import risk_assessment
 
 """Does not appear to work when I place the test_risk_assessment files into this test file, or these tests into the test_2g file - either way 'module' object is not callable turns up"""
@@ -87,25 +86,25 @@ def test_stations_highest_rel_level():
 
 def risk_assertions(station, risk, state):
     if station.town == "Town 0":
-        assert (risk == "LOW", state == "Falling")
+        assert (risk == "LOW" and state == "Falling")
     
     elif station.town == "Town 1":
-        assert (risk == "LOW", state == "Rising")
+        assert (risk == "LOW" and state == "Rising")
     
     elif station.town == "Town 5":
-        assert (risk == "MODERATE", state == "Rising")
+        assert (risk == "MODERATE" and state == "Rising")
     
     elif station.town == "Town 6":
-        assert (risk == "MODERATE", state == "Falling")
+        assert (risk == "MODERATE" and state == "Falling")
     
     elif station.town == "Town 7":
-        assert (risk == "HIGH", state == "Rising")
+        assert (risk == "HIGH" and state == "Rising")
     
     elif station.town == "Town 8":
-        assert (risk == "HIGH", state == "Falling")
+        assert (risk == "HIGH" and state == "Falling")
     
     elif station.town == "Town 9":
-        assert (risk == "SEVERE", state == "Rising")
+        assert (risk == "SEVERE" and state == "Rising")
     
     else: 
         pass
