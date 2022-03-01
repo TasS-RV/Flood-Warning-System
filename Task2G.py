@@ -27,6 +27,7 @@ def task_run(show_plot,most_severe = False):
     
     i = 0
     for station in consistent_stations:
+        #Required for observing progression of output: very large number of stations, takes a long period of time
         print('Station', i)
         i += 1
     
