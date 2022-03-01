@@ -7,7 +7,7 @@ import datetime
 
 
 
-def task_run():    
+def task_run(show_plot = True):    
 #External part of code: required to generate arrays of Station dictionaries, along with dates and level data
     stations =  build_station_list()
 
@@ -23,9 +23,10 @@ def task_run():
 
     for station in level_stations:
         dates, levels = fetch_measure_levels(station.measure_id, dt = datetime.timedelta(days = dt))
-        plot_water_level_with_fit(station, dates, levels, p, range_plot)    
+        plot_water_level_with_fit(station, dates, levels, p, range_plot, show_plot)    
 
 
 #Testing Task 2F:
 if __name__ == '__main__':
-    task_run()
+    show_plot  = True #False if not to show the fitted plots
+    task_run(show_plot)

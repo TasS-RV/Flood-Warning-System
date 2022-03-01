@@ -17,7 +17,7 @@ def task_run(show_plot,most_severe = False):
     # Update latest level data for all stations (to present time))
     update_water_levels(stations)
     
-    consistent_stations = [station for station in stations if station not in inconsistent_typical_range_stations(stations)]
+    consistent_stations = [station for station in stations if station.name not in inconsistent_typical_range_stations(stations)]
 
     dt = 3 #Number of days for levels history - too high and polyfit may not be accurate, too low and insufficient points
     p = 6 #Selecting the maximum order of the polynomial for curve fitting
@@ -25,22 +25,15 @@ def task_run(show_plot,most_severe = False):
     #Dictionary of towns followed by numerical risk scaling (discrete)
     risk_level = {}
     
-    for n, station in enumerate(consistent_stations, 0):
-        if n > 40:
-            break
-
+    i = 0
+    for station in consistent_stations:
+        #Required for observing progression of output: very large number of stations, takes a long period of time
+        print('Station', i)
+        i += 1
+    
         dates, levels = fetch_measure_levels(station.measure_id, dt = datetime.timedelta(days = dt))
-        if levels != None and len(dates) > 0:     
-            try:               
-                risk_level[station.town] = risk_assessment(station, dates, levels, p, show_plot)
-        
-        ####Issue here: need to fix, for station North America - change the limit of n for when the loop breaks to reach the station with error
-            except Exception:
-                print("Tripped in function") 
-                print(levels)
-                print(dates)
-                print("\n\n\n")
-                print(station)        
+        if levels != None and len(dates) > 0:
+            risk_level[station.town] = risk_assessment(station, dates, levels, p, show_plot)
 
     #Key note: groupby assumes the list is sorted in terms of criteria of grouping
     for key, group in groupby(sorted(risk_level,key = lambda x: risk_level[x][0]), lambda x: risk_level[x][0]):
