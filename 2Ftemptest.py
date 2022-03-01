@@ -1,4 +1,4 @@
-import matplotlib
+
 import matplotlib.pyplot as plt
 from matplotlib.dates import date2num
 from datetime import datetime, timedelta
@@ -7,7 +7,7 @@ import numpy as np
 
 from floodsystem.station import MonitoringStation
 from floodsystem.plot import plot_water_levels, plot_water_level_with_fit
-from floodsystem.flood import stations_highest_rel_level
+
 
 def station_create_test(s, s_id, m_id, label, coord, trange, river, town):
     assert s.station_id == s_id
@@ -59,46 +59,58 @@ def test_plot_water_levels():
     assert (y_plot == levels).all()
 
 
-#Can test function: by creating a set of x and y parameters, and checking np.plyfit value agreement rounded to i.e. 1 or 2 dp against the real data
-#Test data should be a polynomial itself
-#First plot is the real plot for level and dates data, 2nd plot is the polynomial fit plot for reference
-
-
 def test_plot_water_level_with_fit():
-    stations = create_test_stations(10)
-    
-    #c is the offset of the function
-    poly_levels = "(-x-1)**4+(-x-1)**3-(-x-1)**2-(-x-1)+1"
-    dt = 2
 
+    stations = create_test_stations(6)
+    
+    #Time history over past 2 days
+    dt = 2
+   #All stations to have identical datetime ranges  
     day_increments = [timedelta(days = increment) for increment in np.linspace(0, dt ,len(stations))]
     dates = [datetime(2022,2,22) + difference for difference in day_increments] 
-    
     #date2num conversion occurs inside the function itself
-    dates_counted = date2num(dates)
-    dates_shifted = [(date - dates_counted[-1]) for date in dates_counted]
-    levels = [eval(poly_levels) for x in dates_shifted]
+    dates_shifted = [(date - date2num(dates)[-1]) for date in date2num(dates)]
 
-    p = 4
-    coeff = np.polyfit(dates_shifted, levels, p)  #Coefficient finding for fitting level and dates data with polynomial or degree p
-    # Convert coefficient into a polynomial that can be evaluated
-    poly = np.poly1d(coeff)
+    datelevels = {}
+    for n, station in enumerate(stations[:-1], 1):
+        poly_levels = "(-x-1)**4+(-x-1)**3-(-x-1)**2-(-x-1)+{}".format(str(n))
+
+        #Generates the same polynomial, with a shifted set of levels:
+        levels = [eval(poly_levels) for x in dates_shifted]
+        datelevels[station.station_id] = [dates, levels]  #This line may not actually be necessary
+
+        station.typical_range = [4,5]#Around midrange of the levels plots
+        station.latest_level =  levels[-1] #Most recent level value
+
+        fitted_plot, range_high = plot_water_level_with_fit(station, dates, levels, 4, True, False)
+
+        x = fitted_plot.get_xdata()
+        y = fitted_plot.get_ydata()
+
+    #Assertions to check if error between fitted and real values is sufficiently low
+        for  real_x, fit_x in zip(dates, x):
+        #    print(real_x, fit_x)
+            assert (real_x == fit_x)
+        
+      
+        for  real_y, fit_y in zip(levels, y):
+          #  print(real_y, fit_y)
+            assert (abs(real_y - fit_y) < 0.0001)
+        
+        y_range = range_high.get_ydata()
+        assert station.typical_range[1] == y_range[1] #Can be any value in the entire list of high range values
+
+    #Testing cases for stations with empty level or dates/ equating to None values
+    assert plot_water_level_with_fit(station, [], [], 4, True, False) == "Error: Empty Data Set"
+    assert plot_water_level_with_fit(station, None, None, 4, True, False) == "Error: Empty Data Set"
     
-    #Polyfit does appear to get the points exactly
-    fitted_plot, = plt.plot(dates_shifted, poly(dates_shifted), color = 'b', label = "Best-fit Curve")
-    plt.plot(dates_shifted, levels, color = 'r')
     
 
-    x = fitted_plot.get_xdata()
-    y = fitted_plot.get_ydata()
 
-    for  real_x, fit_x in zip(dates_shifted, x):
-        print(real_x, fit_x)
-        assert (abs(real_x - fit_x) < 0.001)
-    
-    for  real_y, fit_y in zip(levels, y):
-        print(real_y, fit_y)
-        assert (abs(real_y - fit_y) < 0.001)
+
+        
+
+   
         
 
 
@@ -106,24 +118,21 @@ def test_plot_water_level_with_fit():
 
 
 
-    #plt.show()
+
+
+
+   
+
+
+        
+
     
-    # Throws: ValueError: The truth value of an array with more than one element is ambiguous. Use a.any() or a.all()
-    # If attempting to check equality between array objects on their own - without specifying number
-   # assert (x == dates_shifted).all()
-  #  assert (y == levels).all()
 
 
-    M = 4 #Selecting 5 stations with highest water levels
-    level_stations = stations_highest_rel_level(stations, M)
 
-    p = 4 #Selecting the maximum order of the polynomial for curve fitting
-    range_plot = False #True/False to plot high and low water level lines
 
- #   for station in level_stations:
-  #      dates, levels = fetch_measure_levels(station.measure_id, dt = datetime.timedelta(days = dt))
-   #     plot_water_level_with_fit(station, dates, levels, p, range_plot)  
-
+ 
+  
 
 
 test_plot_water_level_with_fit()

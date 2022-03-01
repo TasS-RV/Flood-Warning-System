@@ -34,8 +34,11 @@ def plot_water_levels(station, dates, levels, show_plot=True):
 def plot_water_level_with_fit(station, dates, levels, p, range_plot=True, show_plot=True): #By default choose to plot the typical range High and Low
 
     #Initially due to empty plot stations with anomalous data
-    if len(levels) == 0 or len(dates) == 0: 
-        print("Error: Empty Data Set")
+    if levels == None or dates == None:
+        return "Error: Empty Data Set"
+
+    elif len(levels) == 0 or len(dates) == 0: 
+        return "Error: Empty Data Set"
     
     else:
         
@@ -44,14 +47,12 @@ def plot_water_level_with_fit(station, dates, levels, p, range_plot=True, show_p
         x_dates_shift = [(date - x_dates[-1]) for date in x_dates] #Shifted by proportion of dates relative to earlier 
         #x_dates_shift: required for increased accuracy of polynomial fit
 
-        print(station.name)
-    #print(x_dates_shift)
         coeff = np.polyfit(x_dates_shift, levels, p)  #Coefficient finding for fitting level and dates data with polynomial or degree p
     # Convert coefficient into a polynomial that can be evaluated
         poly = np.poly1d(coeff)
 
-        real_plot = plt.plot(dates, levels, color = 'r', label = "Real Data")
-        poly_plot = plt.plot(dates, poly(x_dates_shift), color = 'b', label = "Best-fit Curve")
+        plt.plot(dates, levels, color = 'r', label = "Real Data")
+        poly_plot, = plt.plot(dates, poly(x_dates_shift), color = 'b', label = "Best-fit Curve")
 
 
         if range_plot == True:
@@ -62,7 +63,7 @@ def plot_water_level_with_fit(station, dates, levels, p, range_plot=True, show_p
             range_high = list(itertools.repeat(station.typical_range[1],len(x_dates_shift)))
             
             plt.plot(dates, range_low, color = 'g', label = "High line") 
-            plt.plot(dates, range_high, color = '#00FA10', label = "Low line")     
+            rangeplot_high, = plt.plot(dates, range_high, color = '#00FA10', label = "Low line")     
             plt.xticks(rotation = 45)
             plt.legend()
        
@@ -79,6 +80,6 @@ def plot_water_level_with_fit(station, dates, levels, p, range_plot=True, show_p
         if show_plot == True:
             plt.show()
 
-        return real_plot, poly_plot 
+        return poly_plot, rangeplot_high
 
 
